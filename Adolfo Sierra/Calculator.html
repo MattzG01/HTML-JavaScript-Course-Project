@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Calculator</title>
+		<link rel="stylesheet" type="text/css" href="Style.css">
+	</head>
+	<body style="margin-left: 25px;">
+		
+		<audio id="audio" src="sounds/click.wav"></audio>
+		<audio id="audio2" src="sounds/ding.wav"></audio>
+		<div id="titlele">
+			<h1>Unofficial UTRGV JavaScript Calculator</h1>
+		</div>
+
+		<br>
+		<button id="Reload" class="Reload">Reload</button>
+
+		<div id="back">
+			<div id="calc" class="calculator">
+					<div id="display" class="display">0</div>
+
+					<div id="toprow" class="display">
+							<button id="clear" class="clear">C</button>
+							<button operation="plus" class="ops">+</button>
+							<button operation="minus" class="ops">-</button>
+					</div>
+
+					<div id="row1" class="display">
+							<button value="1" class="num">1</button>
+							<button value="2" class="num">2</button>
+							<button value="3" class="num">3</button>
+					</div>
+
+					<div id="row2" class="display">
+							<button value="4" class="num">4</button>
+							<button value="5" class="num">5</button>
+							<button value="6" class="num">6</button>
+					</div>
+
+					<div id="row3" class="display">
+							<button value="7" class="num">7</button>
+							<button value="8" class="num">8</button>
+							<button value="9" class="num">9</button>
+					</div>
+
+					<div id="row4" class="display">
+							<button id="zero" value="0" class="num">0</button>
+							<button value="." class="num">.</button>
+					</div>
+
+					<div id="side" class="display">
+							<button operation="times" class="ops">*</button>
+							<button operation="divided by" class="ops">/</button>
+							<button id="equals" class="equals" result="">=</button>
+					</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+
+			/* Audio Elements */
+			function clack(){
+				var audio = document.getElementById("audio");
+				audio.play();
+			}
+
+			function ding(){
+				var audio2 = document.getElementById("audio2");
+				audio2.play();
+			}
+
+					// not yet mentioned
+			(function() { "use strict";
+				// Shortcut to get elements
+				var elem = function(elem) {
+					if (elem.charAt(0) === "#") { // If passed an ID...
+						return document.querySelector(elem); // ... returns single element
+					}
+					else{
+						return document.querySelectorAll(elem); // Otherwise, returns a nodelist
+					} 
+				};
+
+				//Variables
+				var  
+					currentNum = "",
+					oldNum = "",
+					equals = elem("#equals"),
+					operator,
+					nums = elem(".num"),
+					resultNum,
+					display = elem("#display"),
+					ops = elem(".ops");
+
+				//Number button is clicked
+				var setNum = function() {
+					if (resultNum) { //Reset resultNum if a result was displayed
+						currentNum = this.getAttribute("value");
+						resultNum = "";
+					} 
+					else { //Concatenate number to previous numbers
+						currentNum += this.getAttribute("value");
+					}
+					display.innerHTML = currentNum; //Display currentNum
+					clack();
+				};
+
+				//Called when Operator Clicked
+				var operate = function() {
+					oldNum = currentNum;
+					currentNum = "";
+					operator = this.getAttribute("operation");
+					equals.setAttribute("result", ""); //Reset result
+					clack();
+				};
+
+				//Calculate result
+				var displayNum = function() {
+
+					//Parse input string to numbers
+					oldNum = parseFloat(oldNum);
+					currentNum = parseFloat(currentNum);
+
+					//Do operation
+					switch (operator) {
+						case "plus": {
+							resultNum = oldNum + currentNum;
+							break;
+						}
+						case "minus": {
+							resultNum = oldNum - currentNum;
+							break;
+						}
+						case "times": {
+							resultNum = oldNum * currentNum;
+							break;
+						}
+						case "divided by": {
+							resultNum = oldNum / currentNum;
+							break;
+						}
+						default: {
+							resultNum = currentNum;
+						}
+					}
+
+					// Round, then display result.
+					display.innerHTML = Math.round(resultNum * 1000000000) / 1000000000;
+					equals.setAttribute("result", Math.round(resultNum * 1000000000) / 1000000000);
+
+					//Error Handling
+					if (!isFinite(resultNum)) {
+						if (isNaN(resultNum)) {
+							resultNum = "Error";
+						} 
+						else {
+								resultNum = "Error";
+						}
+					}
+
+					//Reset oldNum and keep resultNum
+					oldNum = 0;
+					currentNum = resultNum;
+
+					ding();
+				};
+
+				//Clear button function
+				var clearAll = function() {
+					oldNum = "";
+					currentNum = "";
+					display.innerHTML = "0";
+					equals.setAttribute("result", resultNum);
+					clack();
+				};
+
+				/* Click events */
+				//Number Buttons
+				for (var i = 0, l = nums.length; i < l; i++) {
+					nums[i].onclick = setNum;
+				}
+
+				//Operators
+				for (var i = 0, l = ops.length; i < l; i++) {
+					ops[i].onclick = operate;
+				}
+
+				//Equals
+				equals.onclick = displayNum;
+
+				//Clear button
+				elem("#clear").onclick = clearAll;
+
+				//Reload button
+				elem("#Reload").onclick = function() {
+					window.location = window.location;
+				};
+			}());
+		</script>
+	</body>
+</html>
